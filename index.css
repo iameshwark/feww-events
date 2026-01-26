@@ -2,101 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
-body {
+html, body {
   margin: 0;
   padding: 0;
-  background-color: #000;
-  color: white;
-  font-family: 'Inter', sans-serif; /* Clean, technical font */
-  overflow: hidden; /* Prevents bouncing on Mac */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Stop the body from scrolling double bars */
+  background-color: black;
 }
 
-/* --- 1. NEON TEXT SELECTION --- */
-::selection {
-  background: #ffffff;
-  color: #000000;
-  text-shadow: none;
-}
-
-/* --- 2. CUSTOM SCROLLBARS (For Chrome/Safari/Edge) --- */
-/* The main page shouldn't scroll, but the Modals DO scroll */
-
-/* Width */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* --- 3. UTILITY CLASSES --- */
-
-/* Hides scrollbar but allows scrolling (Good for the form) */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Canvas Container */
-canvas {
-  touch-action: none; /* Prevents scroll on mobile when touching 3D */
-}
-/* FORCE SCROLLING ON MOBILE */
 #root {
-    height: 100vh;
-    width: 100vw;
-    overflow-y: auto; /* Allow vertical scrolling */
-    overflow-x: hidden; /* Prevent side-scrolling */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iPhone */
-  }
-  
-  /* Make sure the 3D Canvas stays behind and doesn't block touches */
-  canvas {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    z-index: 0; /* Send to back */
-    pointer-events: all; /* Keep 3D interactive */
-  }
-  
-  /* Bring the text content to the front */
-  .overlay-content {
-    position: relative;
-    z-index: 10; /* Bring to front */
-    pointer-events: none; /* Let clicks pass through empty spaces */
-  }
-  
-  /* Re-enable clicks on buttons and text */
-  .overlay-content * {
-    pointer-events: auto;
-  }
+  width: 100%;
+  height: 100%;
+}
+
+/* 🔴 CRITICAL FIX: Make the 3D Canvas ignore touches so you can scroll */
+canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0; /* Send to back */
+  pointer-events: none; /* Let touches pass through to the text! */
+}
