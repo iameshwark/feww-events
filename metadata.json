@@ -1,0 +1,5 @@
+{
+  "name": "Liquid Lens",
+  "description": "An immersive full-screen 3D experience featuring a high-performance liquid distortion shader that reacts to mouse movement using React Three Fiber.",
+  "requestFramePermissions": []
+}

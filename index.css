@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: white;
+  font-family: 'Inter', sans-serif; /* Clean, technical font */
+  overflow: hidden; /* Prevents bouncing on Mac */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- 1. NEON TEXT SELECTION --- */
+::selection {
+  background: #ffffff;
+  color: #000000;
+  text-shadow: none;
+}
+
+/* --- 2. CUSTOM SCROLLBARS (For Chrome/Safari/Edge) --- */
+/* The main page shouldn't scroll, but the Modals DO scroll */
+
+/* Width */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* --- 3. UTILITY CLASSES --- */
+
+/* Hides scrollbar but allows scrolling (Good for the form) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Canvas Container */
+canvas {
+  touch-action: none; /* Prevents scroll on mobile when touching 3D */
+}
