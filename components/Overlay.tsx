@@ -26,8 +26,6 @@ export const Overlay: React.FC<OverlayProps> = ({ event, onOpenRegistration }) =
   };
 
   return (
-    // 🔴 FIX 1: Use "dvh" (Dynamic Height) to ignore browser bars
-    // 🔴 FIX 2: Add "safe-area" padding for iPhone notches
     <div className="absolute inset-0 w-full h-[100dvh] z-10 overflow-y-auto overflow-x-hidden pointer-events-auto bg-transparent">
       
       <div className="min-h-[100dvh] w-full flex flex-col justify-between p-6 pb-24 md:p-12 relative max-w-[1600px] mx-auto pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
@@ -48,7 +46,6 @@ export const Overlay: React.FC<OverlayProps> = ({ event, onOpenRegistration }) =
         </header>
 
         {/* --- HERO SECTION --- */}
-        {/* Added "my-auto" to vertically center this block perfectly between header/footer */}
         <main className="flex flex-col items-start justify-center flex-grow py-8 md:py-20 my-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -60,7 +57,6 @@ export const Overlay: React.FC<OverlayProps> = ({ event, onOpenRegistration }) =
               INCOMING TRANSMISSION // {event.date}
             </p>
             
-            {/* Responsive Text Size: smaller on mobile so it fits */}
             <h2 
               className="text-5xl md:text-9xl font-black uppercase tracking-tighter leading-[0.9] mb-6 mix-blend-difference break-words"
               style={{ color: 'white', WebkitTextStroke: '1px rgba(255,255,255,0.2)' }}
@@ -94,11 +90,9 @@ export const Overlay: React.FC<OverlayProps> = ({ event, onOpenRegistration }) =
           </motion.div>
         </main>
 
-        {/* --- FOOTER / UPDATES --- */}
-        {/* Added extra padding-bottom (pb-8) to stay clear of the swipe bar */}
+        {/* --- FOOTER --- */}
         <footer className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end border-t border-white/10 pt-6 pb-8 md:pb-0 shrink-0 bg-gradient-to-t from-black/80 to-transparent md:bg-none">
           
-          {/* BOTTOM LEFT: WHATSAPP UPDATES */}
           <div className="group flex flex-col items-start gap-2 w-full">
             {!joined ? (
               <>
@@ -126,7 +120,7 @@ export const Overlay: React.FC<OverlayProps> = ({ event, onOpenRegistration }) =
               <div className="flex flex-col gap-2 w-full">
                 <span className="text-[10px] text-green-400 tracking-widest">NUMBER SECURED</span>
                 <a 
-                  href="https://chat.whatsapp.com/YOUR_LINK" 
+                  href="https://chat.whatsapp.com/" 
                   target="_blank" 
                   rel="noreferrer"
                   className="bg-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-all text-center md:text-left text-white"
@@ -137,7 +131,6 @@ export const Overlay: React.FC<OverlayProps> = ({ event, onOpenRegistration }) =
             )}
           </div>
 
-          {/* BOTTOM RIGHT: CREDITS */}
           <div className="hidden md:flex flex-col items-end text-right">
              <p className="text-[10px] uppercase tracking-widest opacity-30 text-white">System Architecture: v1.0.4</p>
              <p className="text-[10px] uppercase tracking-widest opacity-30 text-white">Secure Connection: TLS 1.3</p>
