@@ -9,8 +9,8 @@ import { FluidBackground } from './components/FluidBackground';
 import { Particles } from './components/Particles';
 import { Artifacts } from './components/Artifacts';
 import { Overlay } from './components/Overlay';
-import { Preloader } from './components/Preloader';
 import { RegistrationForm } from './components/RegistrationForm'; 
+import { MembershipModal } from './components/MembershipModal'; 
 import { audioManager } from './utils/AudioManager';
 
 // TYPES
@@ -28,42 +28,40 @@ export type EventData = {
 const EVENTS: EventData[] = [
   { 
     id: 1, 
-    title: "RAINBOW SKY", 
-    color: "#00ff00", 
-    desc: "High-octane tactical paintball warfare in the underground arena. Teams fight for dominance in a neon-soaked labyrinth.", 
-    date: "COMING SOON" 
+    title: "PROTOCOL 0", 
+    color: "#ff3333", 
+    desc: "FEB 7 // 2026. The 2 PIECE prologue. An exclusive, 40-person invite-only interactive lore hunt. The signal has been established. Only the chosen few will breach the firewall and witness the beginning. Access Restricted.", 
+    date: "FEB 7 // 2026" 
   },
   { 
     id: 2, 
-    title: "2 PIECE - PROTOCOL 13", 
-    color: "#ff0000", 
-    desc: "The influencer treasure hunt begins. 50 players. 1 Winner. A brutal test of wit and endurance streamed live to the world.", 
+    // 🟢 RENAMED: XXX -> UNDYED
+    title: "UNDYED", 
+    color: "#d946ef", 
+    desc: "A Holi celebration twisted by a biochemical outbreak. The containment field has failed. ZOMBIE INVASION IMMINENT. Navigate the neon-soaked chaos, evade the infected, and survive the festival. Run. Hide. Color.", 
     date: "COMING SOON" 
   },
   { 
     id: 3, 
     title: "2 PIECE", 
     color: "#ffd700", 
-    desc: "A city-wide immersive treasure hunt across Chennai. Solvers must decrypt clues hidden in physical locations.", 
-    date: "DECEMBER 2026" 
+    desc: "India's largest, grandest city-wide treasure hunt returns to Chennai. The first-ever experiential reality game of its scale. The city is the board, the clues are real, and the clock is ticking. Prepare for the ultimate protocol.", 
+    date: "COMING SOON" 
   }
 ];
 
-// CAMERA RIG (Mobile Optimized)
+// CAMERA RIG
 const Rig: React.FC<{ started: boolean }> = ({ started }) => {
   const { camera, pointer, size } = useThree();
   const isMobile = size.width < 768;
 
   useFrame((state) => {
-    // 🔴 MOBILE FIX: Move camera further back (z=7.5) so text fits
     const baseZ = isMobile ? 8 : 5;
     const activeZ = isMobile ? 6.5 : 1;
-    
     const targetZ = started ? activeZ : baseZ;
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.02);
 
     if (started) {
-        // 🔴 MOBILE FIX: Reduce motion sickness on phones
         const parallaxStrength = isMobile ? 0.02 : 0.2;
         const targetX = pointer.x * parallaxStrength; 
         const targetY = pointer.y * parallaxStrength;
@@ -81,20 +79,18 @@ const App: React.FC = () => {
   const [viewState, setViewState] = useState<AppState>('intro');
   const [activeEventId, setActiveEventId] = useState<number | null>(null);
   const [targetColor, setTargetColor] = useState<string>('#ffffff');
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(true);
   const [showRegister, setShowRegister] = useState(false); 
   
-  // Refs for Scroll/Swipe Logic
   const lastScrollTime = useRef(0);
-  const touchStartY = useRef(0); // 🔴 MOBILE FIX: Track touch start
+  const touchStartY = useRef(0); 
 
-  // 🔴 1. DESKTOP SCROLL HANDLER
+  // SCROLL LOGIC
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (!started || showRegister) return; 
       const now = Date.now();
       if (now - lastScrollTime.current < 1000) return;
-      
       const threshold = 20;
 
       if (viewState === 'intro') {
@@ -115,7 +111,7 @@ const App: React.FC = () => {
     return () => window.removeEventListener('wheel', handleWheel);
   }, [viewState, started, showRegister]);
 
-  // 🔴 2. MOBILE SWIPE HANDLER (New Code)
+  // TOUCH LOGIC
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
         touchStartY.current = e.touches[0].clientY;
@@ -126,19 +122,14 @@ const App: React.FC = () => {
         const touchEndY = e.changedTouches[0].clientY;
         const diff = touchStartY.current - touchEndY;
         const now = Date.now();
-        
-        // Prevent rapid swipes
         if (now - lastScrollTime.current < 800) return;
 
-        // Threshold for a "Swipe" (50px)
         if (Math.abs(diff) > 50) {
             if (viewState === 'intro' && diff > 0) {
-                // Swiped UP -> Go to Spine
                 setViewState('spine');
                 setTargetColor('#333333');
                 lastScrollTime.current = now;
             } else if (viewState === 'spine' && diff < 0) {
-                // Swiped DOWN -> Go back to Intro
                 setViewState('intro');
                 setTargetColor('#ffffff');
                 lastScrollTime.current = now;
@@ -159,52 +150,16 @@ const App: React.FC = () => {
   return (
     <>
       <AnimatePresence>
-        {!started && (
-          <Preloader onEnter={() => {
-            audioManager.startAmbient();
-            setStarted(true);
-          }} />
-        )}
-
         {showRegister && activeEvent && (
             <RegistrationForm 
                 event={activeEvent}
                 onClose={() => setShowRegister(false)}
-                onProceedToPayment={(formData) => {
-                    console.log("Form Data:", formData);
-                    const pricePerPerson = 500;
-                    const totalAmount = formData.teamSize * pricePerPerson;
-
-                    const options = {
-                        key: "rzp_test_S89w7SL0sxpKCl", 
-                        amount: totalAmount * 100, 
-                        currency: "INR",
-                        name: "FeWW Events",
-                        description: `Entry Fee for ${activeEvent.title}`,
-                        prefill: {
-                            name: formData.teamSize > 1 ? formData.members[0].name : formData.members[0].name,
-                            email: formData.members[0].email,
-                            contact: formData.members[0].phone
-                        },
-                        theme: { color: activeEvent.color },
-                        handler: function (response: any) {
-                            audioManager.playClick(); 
-                            setShowRegister(false);
-                            alert(`PAYMENT SUCCESSFUL!\nPayment ID: ${response.razorpay_payment_id}`);
-                        }
-                    };
-
-                    const rzp = new (window as any).Razorpay(options);
-                    rzp.open();
-                    rzp.on('payment.failed', function (response: any){
-                        alert("Payment Failed: " + response.error.description);
-                    });
-                }}
+                onProceedToPayment={() => {}} 
             />
         )}
       </AnimatePresence>
 
-      <div className="relative w-full h-full bg-black touch-none"> {/* touch-none prevents browser bounce */}
+      <div className="relative w-full h-full bg-black touch-none"> 
         <div className="absolute inset-0 z-0">
           <Canvas
             dpr={[1, 2]} 
@@ -241,23 +196,26 @@ const App: React.FC = () => {
         </div>
         
         {started && (
-            <Overlay 
-              events={EVENTS}
-              viewState={viewState}
-              activeEvent={EVENTS.find(e => e.id === activeEventId) || null}
-              onEnterSpine={() => { setViewState('spine'); setTargetColor('#333333'); }}
-              onSelectEvent={(event) => { setActiveEventId(event.id); setViewState('detail'); setTargetColor(event.color); }}
-              onHoverEvent={(color) => { if (viewState === 'spine') setTargetColor(color); }}
-              onHoverOut={() => { if (viewState === 'spine') setTargetColor('#333333'); }}
-              
-              onBack={() => { 
-                setViewState('spine'); 
-                setActiveEventId(null); 
-                setTargetColor('#333333');
-                setShowRegister(false);
-              }}
-              onRegisterStart={() => setShowRegister(true)}
-            />
+            <>
+                <Overlay 
+                  events={EVENTS}
+                  viewState={viewState}
+                  activeEvent={EVENTS.find(e => e.id === activeEventId) || null}
+                  onEnterSpine={() => { setViewState('spine'); setTargetColor('#333333'); }}
+                  onSelectEvent={(event) => { setActiveEventId(event.id); setViewState('detail'); setTargetColor(event.color); }}
+                  onHoverEvent={(color) => { if (viewState === 'spine') setTargetColor(color); }}
+                  onHoverOut={() => { if (viewState === 'spine') setTargetColor('#333333'); }}
+                  onBack={() => { 
+                    setViewState('spine'); 
+                    setActiveEventId(null); 
+                    setTargetColor('#333333');
+                    setShowRegister(false);
+                  }}
+                  onRegisterStart={() => setShowRegister(true)}
+                />
+                
+                <MembershipModal />
+            </>
         )}
       </div>
     </>

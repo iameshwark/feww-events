@@ -6,6 +6,7 @@ import { supabase } from '../utils/supabaseClient';
 
 // ASSETS
 const NOISE_SVG = `data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E`;
+const LOGO_SRC = "/logo.png";
 
 // HELPER: Magnetic Button
 const Magnetic: React.FC<{ children: ReactNode; className?: string; strength?: number }> = ({ children, className = "", strength = 0.3 }) => {
@@ -67,7 +68,7 @@ const AboutModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </motion.div>
 );
 
-// --- HELPER FOR CONTACT LINKS ---
+// HELPER FOR CONTACT LINKS
 const ContactLink = ({ label, value, href }: { label: string, value: string, href: string }) => (
   <a
     href={href}
@@ -107,7 +108,7 @@ const ContactModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
                 <div className="grid gap-4">
                     <ContactLink label="Priority Line" value="+91 90354 01456" href="tel:+919035401456" />
-                    <ContactLink label="Electronic Mail" value="contact@feww.events" href="mailto:contact@feww.events" />
+                    <ContactLink label="Electronic Mail" value="partners@feww.events" href="mailto:partners@feww.events" />
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-white/10">
@@ -166,6 +167,7 @@ export const Overlay: React.FC<OverlayProps> = ({
   const [phone, setPhone] = useState('');
   const [joined, setJoined] = useState(false);
   const playClick = () => audioManager.playClick();
+  const playHover = () => audioManager.playHover();
 
   useEffect(() => {
     const unlockAudio = () => audioManager.startAmbient();
@@ -183,22 +185,18 @@ export const Overlay: React.FC<OverlayProps> = ({
       <div className="absolute inset-0 z-50 pointer-events-none opacity-[0.08] mix-blend-overlay" style={{ backgroundImage: `url("${NOISE_SVG}")` }} />
 
       {/* --- HUD NAVIGATION --- */}
-      {/* 🔴 FIXED: Increased padding to p-6 for more breathing room */}
       <div className="absolute inset-0 z-[90] pointer-events-none p-6 pb-10 md:p-12 flex flex-col justify-between text-white mix-blend-difference h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         
         {/* TOP ROW */}
         <div className="flex justify-between items-start pointer-events-auto">
           <Magnetic strength={0.2}>
-            {/* 🔴 FIXED: Added p-2 padding area for easier clicking */}
             <button onClick={() => { playClick(); onBack(); }} className="group flex flex-col items-start p-2 -ml-2">
               <span className="text-2xl md:text-3xl font-black tracking-tight md:tracking-tighter">FeWW</span>
-              {/* 🔴 FIXED: Increased text size to text-xs (12px) */}
               <span className="text-xs tracking-[0.2em] opacity-50 group-hover:opacity-100 transition-opacity">EVENTS</span>
             </button>
           </Magnetic>
 
           <Magnetic strength={0.2}>
-            {/* 🔴 FIXED: Increased text size and added padding area */}
             <button onClick={() => { playClick(); setShowAbout(true); }} className="text-xs font-bold tracking-widest uppercase opacity-60 hover:opacity-100 border-b border-transparent hover:border-white transition-all pb-1 text-right p-2 -mr-2">
               Mission Brief<br className="md:hidden"/> / Partners
             </button>
@@ -212,7 +210,6 @@ export const Overlay: React.FC<OverlayProps> = ({
                 <>
                     <span className="hidden md:block text-xs uppercase tracking-widest opacity-40">Receive Updates</span>
                     <div className="flex items-center border-b border-white/20 group-hover:border-white transition-colors w-full">
-                        {/* 🔴 FIXED: Bigger input text */}
                         <input 
                             type="tel" 
                             placeholder="WHATSAPP" 
@@ -226,12 +223,19 @@ export const Overlay: React.FC<OverlayProps> = ({
             ) : (
                 <div className="flex flex-col gap-1">
                     <span className="text-xs text-green-400 tracking-widest">SECURED</span>
+                    <a 
+                        href="https://chat.whatsapp.com/GiqnDUtRKY588iiZN4SLSs" 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="bg-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-all mt-1"
+                    >
+                        Click to Join Community &rarr;
+                    </a>
                 </div>
             )}
           </div>
           
           <Magnetic strength={0.2}>
-             {/* 🔴 FIXED: Bigger text and padding area */}
             <button onClick={() => { playClick(); setShowContact(true); }} className="text-xs font-bold tracking-widest uppercase opacity-60 hover:opacity-100 border-b border-transparent hover:border-white transition-all pb-1 p-2 -mr-2">
               Contact HQ
             </button>
@@ -249,18 +253,29 @@ export const Overlay: React.FC<OverlayProps> = ({
         {/* --- STATE A: INTRO --- */}
         <AnimatePresence>
           {viewState === 'intro' && (
+            // 🟢 CHANGED: Added explicit Exit transition to container
             <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -50 }} transition={{ duration: 0.8 }}
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0, y: -50, transition: { duration: 0.5 } }} 
               className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
             >
-              <motion.h1 
-                  initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, duration: 1.5 }}
-                  className="text-6xl md:text-9xl font-black tracking-tight md:tracking-tighter relative text-transparent"
-                  style={{ WebkitTextStroke: window.innerWidth < 768 ? '1px rgba(255, 255, 255, 0.8)' : '2px rgba(255, 255, 255, 0.8)' }}
+              <motion.img 
+                  src={LOGO_SRC}
+                  alt="FeWW Logo"
+                  initial={{ opacity: 0, scale: 0.9 }} 
+                  // 🟢 SEPARATED: Entry is slow (1.5s), Delay is ONLY for entry
+                  animate={{ opacity: 1, scale: 1, transition: { delay: 0.5, duration: 1.5 } }} 
+                  // 🟢 FIXED: Exit is fast (0.3s) and has NO delay
+                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.3, delay: 0 } }}
+                  className="w-80 md:w-[600px] object-contain relative mix-blend-screen"
+              />
+              <motion.p 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 0.5, transition: { delay: 1.5, duration: 1 } }} 
+                exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                className="mt-8 text-xs uppercase tracking-widest mix-blend-difference animate-pulse"
               >
-                  FeWW
-              </motion.h1>
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} transition={{ delay: 1.5, duration: 1 }} className="mt-8 text-xs uppercase tracking-widest mix-blend-difference animate-pulse">
                   Scroll / Swipe to Enter
               </motion.p>
             </motion.div>
@@ -274,21 +289,52 @@ export const Overlay: React.FC<OverlayProps> = ({
               className="absolute inset-0 flex flex-col items-center justify-center pointer-events-auto h-[100dvh] pt-20 pb-20"
           >
               <div className="flex flex-col gap-6 md:gap-8 w-full max-w-4xl px-4 items-center overflow-y-auto max-h-full no-scrollbar">
-                  {events.map((event) => (
-                      <motion.div
-                          key={event.id}
-                          layoutId={`container-${event.id}`}
-                          className="group cursor-pointer relative text-center shrink-0 py-4"
-                          onClick={() => { playClick(); onSelectEvent(event); }}
-                      >
-                            <motion.h2
-                                layoutId={`title-${event.id}`}
-                                className="text-4xl md:text-7xl font-bold uppercase tracking-tighter text-white/50 group-hover:text-white transition-colors duration-300"
-                            >
-                                {event.title}
-                            </motion.h2>
-                      </motion.div>
-                  ))}
+                  {events.map((event) => {
+                      const isSpecial = event.title === "2 PIECE";
+                      const isUndyed = event.title === "UNDYED";
+
+                      return (
+                          <motion.div
+                              key={event.id}
+                              layoutId={`container-${event.id}`}
+                              className={`group cursor-pointer relative text-center shrink-0 py-4 ${isSpecial ? 'my-8' : ''}`}
+                              onClick={() => { playClick(); onSelectEvent(event); }}
+                              onMouseEnter={() => { playHover(); onHoverEvent(event.color); }}
+                              onMouseLeave={onHoverOut}
+                          >
+                                {isSpecial ? (
+                                    <div className="relative border border-[#ffd700] p-6 md:p-10 bg-[#ffd700]/5 hover:bg-[#ffd700]/10 transition-all duration-500 backdrop-blur-sm group-hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]">
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4 border border-[#ffd700] text-[#ffd700] text-[10px] tracking-[0.3em] font-bold uppercase">
+                                            Flagship Protocol
+                                        </div>
+                                        <motion.h2
+                                            layoutId={`title-${event.id}`}
+                                            className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-[#ffd700] drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]"
+                                        >
+                                            {event.title}
+                                        </motion.h2>
+                                        <p className="text-[#ffd700] text-[10px] tracking-[0.5em] mt-2 opacity-60">
+                                            COMING SOON
+                                        </p>
+                                    </div>
+                                ) : isUndyed ? (
+                                    <motion.h2
+                                        layoutId={`title-${event.id}`}
+                                        className="text-4xl md:text-7xl font-bold uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-yellow-400 to-cyan-500 hover:brightness-125 transition-all duration-300"
+                                    >
+                                        {event.title}
+                                    </motion.h2>
+                                ) : (
+                                    <motion.h2
+                                        layoutId={`title-${event.id}`}
+                                        className="text-4xl md:text-7xl font-bold uppercase tracking-tighter text-white/50 group-hover:text-white transition-colors duration-300"
+                                    >
+                                        {event.title}
+                                    </motion.h2>
+                                )}
+                          </motion.div>
+                      );
+                  })}
               </div>
           </motion.div>
         )}
@@ -304,16 +350,17 @@ export const Overlay: React.FC<OverlayProps> = ({
                   <div className="w-full md:w-1/2 p-6 pt-24 md:p-16 flex flex-col justify-start md:justify-center relative">
                       <motion.button
                           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
                           onClick={() => { playClick(); onBack(); }}
-                          className="absolute top-28 left-6 md:top-12 md:left-12 text-xs font-bold uppercase tracking-widest border border-white/20 px-4 py-2 rounded-full mb-4 bg-black/50 backdrop-blur-md z-50"
+                          className="absolute top-28 left-6 md:top-32 md:left-12 text-xs font-bold uppercase tracking-widest border border-white/20 px-4 py-2 rounded-full mb-4 bg-black/50 backdrop-blur-md z-50"
                       >
                           &larr; Back
                       </motion.button>
 
                       <motion.h2
                           layoutId={`title-${activeEvent.id}`}
-                          className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] mt-12 md:mt-0"
-                          style={{ color: activeEvent.color }}
+                          className={`text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] mt-12 md:mt-0 ${activeEvent.title === 'UNDYED' ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-yellow-400 to-cyan-500' : ''}`}
+                          style={{ color: activeEvent.title === 'UNDYED' ? undefined : activeEvent.color }}
                       >
                           {activeEvent.title}
                       </motion.h2>
@@ -323,6 +370,7 @@ export const Overlay: React.FC<OverlayProps> = ({
                   <div className="w-full md:w-1/2 p-6 md:p-16 flex flex-col justify-center bg-gradient-to-t from-black via-black/90 to-transparent md:bg-gradient-to-l md:from-black/80">
                       <motion.div
                           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, transition: { duration: 0.1 } }} 
                           transition={{ delay: 0.2 }}
                       >
                           <p className="text-xs font-mono text-white/50 mb-4 tracking-widest border-l-2 pl-4" style={{ borderColor: activeEvent.color }}>
@@ -331,12 +379,13 @@ export const Overlay: React.FC<OverlayProps> = ({
                           <p className="text-lg md:text-2xl leading-relaxed font-light text-white/90 mb-8">
                             {activeEvent.desc}
                           </p>
-                          <button 
-                            onClick={() => { playClick(); onRegisterStart(); }}
-                            className="w-full md:w-auto px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-sm hover:bg-neutral-200 transition-all mb-12"
-                          >
-                            Initiate Registration &rarr;
-                          </button>
+                          
+                          <div className="mt-8 p-4 border border-white/20 bg-white/5 text-center md:text-left backdrop-blur-sm inline-block">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-1">Status</p>
+                            <p className="text-xl md:text-2xl font-black uppercase tracking-widest text-white">
+                                Awaiting Intel
+                            </p>
+                          </div>
                       </motion.div>
                   </div>
               </div>
