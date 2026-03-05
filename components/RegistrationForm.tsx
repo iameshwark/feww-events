@@ -20,7 +20,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ event, onClo
   const pricePerTicket = 350;
   const totalAmount = peopleCount * pricePerTicket;
   
-  const upiId = "fewwevents@ybl"; 
+  const upiId = "9035401456-2@ybl"; 
   const upiLink = `upi://pay?pa=${upiId}&pn=FeWW%20Events&am=${totalAmount}&cu=INR`;
 
   const mathError = (maleCount + femaleCount) !== peopleCount;
