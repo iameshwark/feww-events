@@ -8,9 +8,10 @@ interface NavbarProps {
   onLoginClick: () => void;
   onLogout: () => void;
   onOpenAccount: () => void; 
+  onOpenTickets: () => void; 
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLoginClick, onLogout, onOpenAccount }) => {
+export const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLoginClick, onLogout, onOpenAccount, onOpenTickets }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -70,13 +71,8 @@ export const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLoginClick, o
                     <button onClick={() => { setDropdownOpen(false); onOpenAccount(); }} className="w-full text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 rounded-lg transition-colors flex justify-between items-center group">
                       <span>My Account</span><span className="text-zinc-600 group-hover:text-white">⚙</span>
                     </button>
-
-                    <button 
-                        onClick={() => { setDropdownOpen(false); onOpenTickets(); }} // 🔴 UPDATED
-                        className="w-full text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 rounded-lg transition-colors flex justify-between items-center group"
-                        >
-                        <span>My Grid Tickets</span>
-                        <span className="text-zinc-600 group-hover:text-white">&rarr;</span>
+                    <button onClick={() => { setDropdownOpen(false); onOpenTickets(); }} className="w-full text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 rounded-lg transition-colors flex justify-between items-center group">
+                      <span>My Grid Tickets</span><span className="text-zinc-600 group-hover:text-white">&rarr;</span>
                     </button>
                     <button onClick={() => { setDropdownOpen(false); navigate('/events'); }} className="w-full text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 rounded-lg transition-colors flex justify-between items-center group">
                       <span>Book New Event</span><span className="text-zinc-600 group-hover:text-white">&rarr;</span>

@@ -5,7 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing'; 
 import * as THREE from 'three';
 import { supabase } from './utils/supabaseClient';
-import { GridTicketsModal } from './components/GridTicketsModal';
+import { ScannerHQ } from './components/ScannerHQ';
 
 // COMPONENT IMPORTS
 import { FluidBackground } from './components/FluidBackground';
@@ -15,7 +15,9 @@ import { Overlay, AboutModal, ContactModal } from './components/Overlay';
 import { RegistrationForm } from './components/RegistrationForm'; 
 import { AuthModal } from './components/AuthModal';
 import { AccountModal } from './components/AccountModal';
+import { GridTicketsModal } from './components/GridTicketsModal'; // 🔴 TICKET COMPONENT
 import { Navbar } from './components/Navbar';
+import { AdminHQ } from './components/AdminHQ';
 
 // TYPES
 export type AppState = 'intro' | 'spine' | 'detail';
@@ -85,7 +87,7 @@ const Rig: React.FC<{ started: boolean }> = ({ started }) => {
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showTickets, setShowTickets] = useState(false);
+
   const [viewState, setViewState] = useState<AppState>('intro');
   const [activeEventId, setActiveEventId] = useState<number | null>(null);
   const [targetColor, setTargetColor] = useState<string>('#ffffff');
@@ -100,6 +102,7 @@ const AppContent: React.FC = () => {
   const [showAbout, setShowAbout] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
+  const [showTickets, setShowTickets] = useState(false); // 🔴 NEW: Ticket State
   
   const lastScrollTime = useRef(0);
   const touchStartY = useRef(0); 
@@ -111,16 +114,17 @@ const AppContent: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // URL ROUTER (The brain of the app)
+  // URL ROUTER
   useEffect(() => {
     const path = location.pathname.toLowerCase();
     
-    // Close all modals first
+    // Close all modals when URL changes
     setShowAbout(false);
     setShowContact(false);
     setShowRegister(false);
     setShowAuth(false);
     setShowAccount(false);
+    setShowTickets(false);
 
     if (path === '/' || path === '') {
         setViewState('intro');
@@ -138,6 +142,10 @@ const AppContent: React.FC = () => {
         setShowContact(true);
         if (viewState === 'intro') setViewState('spine');
         setTargetColor('#333333');
+    } else if (path === '/hq-admin') {
+        setViewState('detail'); 
+    }  else if (path === '/hq-admin' || path === '/scanner') { // 🔴 ADDED /scanner here
+          setViewState('detail'); 
     } else {
         const event = EVENTS.find(e => path.includes(`/${e.slug}`));
         if (event) {
@@ -155,7 +163,7 @@ const AppContent: React.FC = () => {
   // SCROLL LOGIC
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (!started || showRegister || showAuth || showAbout || showContact || showAccount) return; 
+      if (!started || showRegister || showAuth || showAbout || showContact || showAccount || showTickets) return; 
       const now = Date.now();
       if (now - lastScrollTime.current < 1000) return;
       
@@ -171,13 +179,13 @@ const AppContent: React.FC = () => {
     };
     window.addEventListener('wheel', handleWheel);
     return () => window.removeEventListener('wheel', handleWheel);
-  }, [viewState, started, showRegister, showAuth, showAbout, showContact, showAccount, navigate]);
+  }, [viewState, started, showRegister, showAuth, showAbout, showContact, showAccount, showTickets, navigate]);
 
   // TOUCH LOGIC
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => touchStartY.current = e.touches[0].clientY;
     const handleTouchEnd = (e: TouchEvent) => {
-        if (!started || showRegister || showAuth || showAbout || showContact || showAccount) return;
+        if (!started || showRegister || showAuth || showAbout || showContact || showAccount || showTickets) return;
         const touchEndY = e.changedTouches[0].clientY;
         const diff = touchStartY.current - touchEndY;
         const now = Date.now();
@@ -200,7 +208,7 @@ const AppContent: React.FC = () => {
         window.removeEventListener('touchstart', handleTouchStart);
         window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [viewState, started, showRegister, showAuth, showAbout, showContact, showAccount, navigate]);
+  }, [viewState, started, showRegister, showAuth, showAbout, showContact, showAccount, showTickets, navigate]);
 
   const activeEvent = EVENTS.find(e => e.id === activeEventId) || null;
 
@@ -211,7 +219,7 @@ const AppContent: React.FC = () => {
         {showAbout && <AboutModal />}
         {showContact && <ContactModal />}
         {showAccount && <AccountModal onClose={() => navigate(-1)} />}
-        {showTickets && <GridTicketsModal onClose={() => setShowTickets(false)} />}
+        {showTickets && <GridTicketsModal onClose={() => setShowTickets(false)} />} 
         
         {showAuth && (
             <AuthModal 
@@ -226,7 +234,7 @@ const AppContent: React.FC = () => {
                 onClose={() => navigate(`/${activeEvent.slug}`)}
                 onSuccess={() => {
                     setShowRegister(false);
-                    setShowTickets(true); // Pops the ticket open instantly!
+                    setShowTickets(true);
                 }}
             />
         )}
@@ -234,12 +242,25 @@ const AppContent: React.FC = () => {
 
       {/* FIXED NAVBAR */}
       <Navbar 
-        isAuthenticated={isAuthenticated} 
-        onLoginClick={() => setShowAuth(true)} 
-        onLogout={() => setIsAuthenticated(false)}
-        onOpenAccount={() => setShowAccount(true)}
-        onOpenTickets={() => setShowTickets(true)} // Pass the new prop
+          isAuthenticated={isAuthenticated} 
+          onLoginClick={() => setShowAuth(true)} 
+          onLogout={() => setIsAuthenticated(false)}
+          onOpenAccount={() => setShowAccount(true)}
+          onOpenTickets={() => setShowTickets(true)}
       />
+
+      {/* HQ ADMIN TERMINAL OVERRIDE */}
+      {location.pathname.toLowerCase() === '/hq-admin' && isAuthenticated && (
+          <div className="absolute inset-0 z-[300] bg-black">
+              <AdminHQ />
+          </div>
+      )}
+      {/* GATE SCANNER TERMINAL */}
+      {location.pathname.toLowerCase() === '/scanner' && isAuthenticated && (
+          <div className="absolute inset-0 z-[400] bg-black">
+              <ScannerHQ />
+          </div>
+      )}
 
       <div className="relative w-full h-full bg-black touch-none"> 
         <div className="absolute inset-0 z-0">
