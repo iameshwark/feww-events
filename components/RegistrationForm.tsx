@@ -16,7 +16,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ event, onClo
   const [utr, setUtr] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [zoomQr, setZoomQr] = useState(false);
-  
+  const [agreed, setAgreed] = useState(false);
+
   const pricePerTicket = 350;
   const totalAmount = peopleCount * pricePerTicket;
   
@@ -126,9 +127,24 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ event, onClo
               <label className="block text-xs text-zinc-400 mb-2 uppercase tracking-widest">Enter 12-Digit UTR *</label>
               <input type="text" placeholder="e.g. 304512984712" required minLength={12} maxLength={12} className="w-full bg-black border border-zinc-800 p-3 text-white focus:outline-none focus:border-white font-mono text-sm uppercase" value={utr} onChange={e => setUtr(e.target.value.replace(/\D/g, ''))} />
             </div>
-
-            <button type="submit" disabled={isSubmitting || mathError} className="w-full mt-6 p-4 text-black font-black uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed" style={{ backgroundColor: event.color }}>
-              {isSubmitting ? 'Processing...' : 'Submit Transmission'}
+            <div className="flex items-start gap-3 mt-8 bg-zinc-900/50 p-4 border border-zinc-800 rounded-xl">
+                <input 
+                    type="checkbox" 
+                    id="legal-terms" 
+                    checked={agreed} 
+                    onChange={(e) => setAgreed(e.target.checked)} 
+                    className="mt-1 w-4 h-4 accent-pink-500 cursor-pointer shrink-0" 
+                />
+                <label htmlFor="legal-terms" className="text-[10px] text-zinc-400 leading-relaxed uppercase tracking-widest cursor-pointer select-none">
+                    I agree to the <a href="/terms" target="_blank" className="text-white underline hover:text-pink-500">Terms & Conditions</a>, <a href="/privacy-policy" target="_blank" className="text-white underline hover:text-pink-500">Privacy Policy</a>, and <a href="/refund-policy" target="_blank" className="text-white underline hover:text-pink-500">Refund Policy</a>. I understand all sales are final and assume all physical risks associated with this protocol.
+                </label>
+            </div>
+            <button 
+                type="submit" 
+                disabled={loading || !agreed}
+                className={`w-full py-4 font-black uppercase tracking-widest text-xs transition-colors mt-6 ${agreed ? 'bg-white text-black hover:bg-neutral-300' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}`}
+            >
+                {loading ? 'Transmitting...' : 'Confirm Registration'}
             </button>
           </form>
         </motion.div>

@@ -6,6 +6,7 @@ import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@re
 import * as THREE from 'three';
 import { supabase } from './utils/supabaseClient';
 import { ScannerHQ } from './components/ScannerHQ';
+import { Legal } from './components/Legal';
 
 // COMPONENT IMPORTS
 import { FluidBackground } from './components/FluidBackground';
@@ -38,8 +39,17 @@ const EVENTS: EventData[] = [
     slug: "undyed",
     title: "UNDYED", 
     color: "#d946ef", 
-    desc: "Post-holiday depression is a loop, we’re breaking it. We turn the city into a survival-horror simulation because the usual 'back to reality' routine is dead. UNDYED is the transition—a high-stakes hunt where you’re dodging the outbreak to reach the safe zone. This isn't just another party; it’s an invite-only recruitment for those who want to stay in the game while everyone else is clocking back in. Put your name on the registry before the infection spreads and we close the gates for good. Don't stay an NPC.", 
-    date: "MAR 21 // 2026" 
+    desc: "Post-holiday depression is a loop; we’re breaking it. We are turning the city into a survival-horror simulation because the usual 'back to reality' routine is dead.\n\nUNDYED is a high-stakes hunt where you must dodge the outbreak, reach the safe zone, save the city, and claim the cash prize. This isn't just another party. Put your name on the registry before the infection spreads through the limited slots and we close the gates for good. Don't stay an NPC.", 
+    date: "MARCH 21",
+    location: "Double Dribble Turf, Ampa Skyone, Aminjikarai",
+    time: "4:30 PM - 8:00 PM",
+    price: "₹350",
+    includes: [
+      "UNDYED game entry",
+      "Post-game Holi rave",
+      "One complimentary survival ration (drink)",
+      "The ultimate adrenaline rush"
+    ]
   },
   { 
     id: 3, 
@@ -144,8 +154,8 @@ const AppContent: React.FC = () => {
         setTargetColor('#333333');
     } else if (path === '/hq-admin') {
         setViewState('detail'); 
-    }  else if (path === '/hq-admin' || path === '/scanner') { // 🔴 ADDED /scanner here
-          setViewState('detail'); 
+    } else if (path === '/hq-admin' || path === '/scanner' || path === '/privacy-policy' || path === '/terms' || path === '/refund-policy') {
+        setViewState('detail'); 
     } else {
         const event = EVENTS.find(e => path.includes(`/${e.slug}`));
         if (event) {
@@ -259,6 +269,12 @@ const AppContent: React.FC = () => {
       {location.pathname.toLowerCase() === '/scanner' && isAuthenticated && (
           <div className="absolute inset-0 z-[400] bg-black">
               <ScannerHQ />
+          </div>
+      )}
+      {/* LEGAL PAGES */}
+      {(location.pathname.toLowerCase() === '/privacy-policy' || location.pathname.toLowerCase() === '/terms' || location.pathname.toLowerCase() === '/refund-policy') && (
+          <div className="absolute inset-0 z-[300] bg-black">
+              <Legal />
           </div>
       )}
 
