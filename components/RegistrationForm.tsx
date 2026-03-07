@@ -141,10 +141,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ event, onClo
             </div>
             <button 
                 type="submit" 
-                disabled={loading || !agreed}
+                disabled={isSubmitting || !agreed}
                 className={`w-full py-4 font-black uppercase tracking-widest text-xs transition-colors mt-6 ${agreed ? 'bg-white text-black hover:bg-neutral-300' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}`}
             >
-                {loading ? 'Transmitting...' : 'Confirm Registration'}
+                {isSubmitting ? 'Transmitting...' : 'Confirm Registration'}
             </button>
           </form>
         </motion.div>
